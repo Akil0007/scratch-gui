@@ -13,7 +13,7 @@ class ApiService {
                 headers: {
                     "Content-Type": "application/json",
                     "x-moodle-session-key":
-                        session_key /* Moodle Prod or Staging Session Key  */,
+                        "6be36j57r2st8dsknb62ct5v6d" /* Moodle Prod or Staging Session Key  */,
                 },
             });
             if (!response.ok) {
@@ -30,27 +30,37 @@ class ApiService {
 
     async getProject(id) {
         let data;
+        let fileName;
         try {
             const session_key = Cookies.get("MoodleSession");
             await fetch(`${this.baseUrl}/${id}`, {
                 method: "GET",
                 headers: {
                     "Content-Type": "application/json",
-                    "x-moodle-session-key": session_key,
+                    "x-moodle-session-key": "6be36j57r2st8dsknb62ct5v6d",
                 },
             })
-                .then((res) => {
-                    return res.blob();
+                .then(async(res) => {
+                    // return res.blob();
+                    const projectData = await res.json()
+                    const content = await projectData.content
+                    fileName = projectData.name
+                    const arrayBuffer = new Uint8Array(content.data).buffer;
+                    data =  arrayBuffer;
+                    return data
                 })
-                .then((blob) => {
-                    return blob.arrayBuffer();
-                })
-                .then((arrayBuffer) => {
-                    data = arrayBuffer;
-                    return data;
-                });
+                // .then((blob) => {
+                //     return blob.arrayBuffer();
+                // })
+                // .then((arrayBuffer) => {
+                //     data = arrayBuffer;
+                //     return data;
+                // });
 
-            return data;
+            // return data;
+            return {
+                data, fileName
+            }
         } catch (error) {
             throw error;
         }
@@ -63,7 +73,7 @@ class ApiService {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
-                    "x-moodle-session-key": session_key,
+                    "x-moodle-session-key": "6be36j57r2st8dsknb62ct5v6d",
                 },
                 body: JSON.stringify({
                     name: filename,
@@ -84,7 +94,7 @@ class ApiService {
                 method: "PATCH",
                 headers: {
                     "Content-Type": "application/json",
-                    "x-moodle-session-key": session_key,
+                    "x-moodle-session-key": "6be36j57r2st8dsknb62ct5v6d",
                 },
                 body: JSON.stringify({
                     name: filename,
@@ -110,7 +120,7 @@ class ApiService {
                 method: "DELETE",
                 headers: {
                     "Content-Type": "application/json",
-                    "x-moodle-session-key": session_key,
+                    "x-moodle-session-key": "6be36j57r2st8dsknb62ct5v6d",
                 },
             });
             if (!response.ok) {

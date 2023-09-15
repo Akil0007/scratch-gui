@@ -40,6 +40,8 @@ import systemPreferencesHOC from '../lib/system-preferences-hoc.jsx';
 
 import GUIComponent from '../components/gui/gui.jsx';
 import {setIsScratchDesktop} from '../lib/isScratchDesktop.js';
+import AssignmentQuestions from './assignment.jsx';
+import SaveButton from './button.jsx';
 
 class GUI extends React.Component {
     componentDidMount () {
@@ -84,12 +86,17 @@ class GUI extends React.Component {
             ...componentProps
         } = this.props;
         return (
-            <GUIComponent
+            <>
+            <AssignmentQuestions/>
+             <GUIComponent
                 loading={fetchingProject || isLoading || loadingStateVisible}
                 {...componentProps}
             >
                 {children}
-            </GUIComponent>
+            </GUIComponent> 
+            <SaveButton/>
+            </>
+           
         );
     }
 }

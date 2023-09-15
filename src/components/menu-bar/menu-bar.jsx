@@ -191,6 +191,11 @@ AboutButton.propTypes = {
 class MenuBar extends React.Component {
     constructor(props) {
         super(props);
+
+        this.state = {
+            disableDiv: false
+          };
+
         bindAll(this, [
             "handleClickNew",
             "handleClickRemix",
@@ -205,8 +210,14 @@ class MenuBar extends React.Component {
             "restoreOptionMessage",
         ]);
     }
+    
     componentDidMount() {
         document.addEventListener("keydown", this.handleKeyPress);
+        const searchParams = new URLSearchParams(window.location.search);
+
+        if (searchParams.toString().length > 0) {
+          this.setState({ disableDiv: true });
+        }
     }
     componentWillUnmount() {
         document.removeEventListener("keydown", this.handleKeyPress);
@@ -847,7 +858,8 @@ class MenuBar extends React.Component {
                         )}
                     </div>
                     <Divider className={classNames(styles.divider)} />
-                    <div className={styles.fileGroup}>
+                    {/* <div className={styles.fileGroup}> */}
+                    <div className={this.state.disableDiv ?  styles.file : styles.fileGroup }>
                         <div
                             aria-label={this.props.intl.formatMessage(
                                 ariaMessages.tutorials

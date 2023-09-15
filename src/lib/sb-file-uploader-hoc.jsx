@@ -59,6 +59,15 @@ const SBFileUploaderHOC = function (WrappedComponent) {
                 this.handleFinishedLoadingUpload(); // cue step 5 below
             }
 
+
+            if(window.location.search.length > 0) {
+                const searchParams = new URLSearchParams(window.location.search);
+                const projectId = searchParams.get("id");
+                console.log('id', projectId, this.props?.fileId?.id)
+                // if(this.props?.fileId?.id === projectId)
+                this.getProjectsToOpen(projectId);
+            }
+
             if (this?.props?.fileId?.id && this.props.swapestate === false) {
                 this.getProjectsToOpen(this?.props?.fileId?.id);
                 this.props.updatestatetofalse(false);
@@ -69,9 +78,12 @@ const SBFileUploaderHOC = function (WrappedComponent) {
             } else return "null";
         }
 
+        
         async getProjectsToOpen(id) {
+            console.log('pid',id)
             const data = await apiServeice.getProject(id);
-            this.onload(data);
+            console.log('datas',data)
+            this.onload1(data.data, data.fileName);
         }
 
         componentWillUnmount() {
@@ -164,6 +176,38 @@ const SBFileUploaderHOC = function (WrappedComponent) {
         onload(arrayBuffer) {
             if (this.props.fileId?.name) {
                 const filename = this.props.fileId?.name;
+                let loadingSuccess = false;
+                this.props.vm
+                    .loadProject(arrayBuffer)
+                    .then(() => {
+                        if (filename) {
+                            const uploadedProjectTitle =
+                                this.getProjectTitleFromFilename(filename);
+                            this.props.onSetProjectTitle(uploadedProjectTitle);
+                        }
+                        loadingSuccess = true;
+                    })
+                    .catch((error) => {
+                        log.warn(error);
+                        // alert(this.props.intl.formatMessage(messages.loadError));
+                    })
+                    .then(() => {
+                        this.props.onLoadingFinished(
+                            this.props.loadingState,
+                            loadingSuccess
+                        );
+                        // go back to step 7: whether project loading succeeded
+                        // or failed, reset file objects
+                        this.removeFileObjects();
+                    });
+            }
+        }
+
+        onload1(arrayBuffer, filename) {
+            console.log('name', filename)
+            if (filename) {
+                // const filename = this.props
+                // console.log('filename', filename)
                 let loadingSuccess = false;
                 this.props.vm
                     .loadProject(arrayBuffer)
